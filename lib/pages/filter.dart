@@ -1,14 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:world_time_app/services/services.dart';
 
-class ChooseLocation extends StatefulWidget {
-  const ChooseLocation({super.key});
+class FilterScreen extends StatefulWidget {
+  const FilterScreen({super.key});
 
   @override
-  State<ChooseLocation> createState() => _ChooseLocationState();
+  State<FilterScreen> createState() => _FilterScreenState();
 }
 
-class _ChooseLocationState extends State<ChooseLocation> {
+class _FilterScreenState extends State<FilterScreen> {
   List<Worltime> locations = [
     Worltime(url: 'Europe/London', location: 'London', flag: 'uk.png'),
     Worltime(url: 'Europe/Berlin', location: 'Athens', flag: 'greece.png'),
@@ -82,8 +84,20 @@ class _ChooseLocationState extends State<ChooseLocation> {
     Worltime(url: 'Asia/Baghdad', location: 'Baghdad', flag: 'iraq.png')
   ];
 
+  List<Worltime> filtered = [];
+  String message = 'Search Locations ';
+
+  void updateData(value) {
+    setState(() {
+      filtered = locations
+          .where((location) =>
+              location.location.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
+  }
+
   void updateTime(index) async {
-    Worltime instance = locations[index];
+    Worltime instance = filtered[index];
 
     await instance.getData();
     Navigator.pop(context, {
@@ -95,30 +109,55 @@ class _ChooseLocationState extends State<ChooseLocation> {
     });
   }
 
-  int num = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue[900],
-        title: const Text('Choose location'),
+        leadingWidth: 25,
         centerTitle: true,
-        elevation: 0,
+        title: TextField(
+          onChanged: (value) {
+            updateData(value);
+            message = 'No location found!';
+          },
+          textAlign: TextAlign.center,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            contentPadding: EdgeInsets.all(3),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            hintText: 'Search',
+            prefixIcon: Icon(Icons.search_rounded),
+            hintStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+            ),
+          ),
+        ),
       ),
-      body: ListView.builder(
-          itemCount: locations.length,
-          itemBuilder: (context, index) {
-            return Card(
-                child: ListTile(
-              onTap: () {
-                updateTime(index);
-              },
-              leading: CircleAvatar(
-                  backgroundImage:
-                      AssetImage('assets/${locations[index].flag}')),
-              title: Text(locations[index].location),
-            ));
-          }),
+      body: filtered.isNotEmpty
+          ? ListView.builder(
+              itemCount: filtered.length,
+              itemBuilder: (context, index) {
+                return Card(
+                    child: ListTile(
+                  onTap: () {
+                    updateTime(index);
+                  },
+                  leading: CircleAvatar(
+                      backgroundImage:
+                          AssetImage('assets/${filtered[index].flag}')),
+                  title: Text(filtered[index].location),
+                ));
+              })
+          : Center(
+              child: Text(message),
+            ),
     );
   }
 }
