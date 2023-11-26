@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:hyper_effects/hyper_effects.dart';
 import 'package:world_time_app/services/services.dart';
 
 class FilterScreen extends StatefulWidget {
@@ -153,7 +154,21 @@ class _FilterScreenState extends State<FilterScreen> {
                       backgroundImage:
                           AssetImage('assets/${filtered[index].flag}')),
                   title: Text(filtered[index].location),
-                ));
+                )).scrollTransition((context, widget, event) => widget
+                    .blur(
+                      switch (event.phase) {
+                        ScrollPhase.identity => 0,
+                        ScrollPhase.topLeading => 5,
+                        ScrollPhase.bottomTrailing => 5,
+                      },
+                    )
+                    .scale(
+                      switch (event.phase) {
+                        ScrollPhase.identity => 1,
+                        ScrollPhase.topLeading => 0.9,
+                        ScrollPhase.bottomTrailing => 0.9,
+                      },
+                    ));
               })
           : Center(
               child: Text(message),

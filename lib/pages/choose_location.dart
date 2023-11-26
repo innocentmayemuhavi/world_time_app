@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:hyper_effects/hyper_effects.dart';
 import 'package:world_time_app/services/services.dart';
 
 class ChooseLocation extends StatefulWidget {
@@ -96,10 +99,12 @@ class _ChooseLocationState extends State<ChooseLocation> {
   }
 
   int num = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.blue[900],
         title: const Text('Choose location'),
         centerTitle: true,
@@ -117,7 +122,21 @@ class _ChooseLocationState extends State<ChooseLocation> {
                   backgroundImage:
                       AssetImage('assets/${locations[index].flag}')),
               title: Text(locations[index].location),
-            ));
+            )).scrollTransition((context, widget, event) => widget
+                .blur(
+                  switch (event.phase) {
+                    ScrollPhase.identity => 0,
+                    ScrollPhase.topLeading => 5,
+                    ScrollPhase.bottomTrailing => 5,
+                  },
+                )
+                .scale(
+                  switch (event.phase) {
+                    ScrollPhase.identity => 1,
+                    ScrollPhase.topLeading => 0.9,
+                    ScrollPhase.bottomTrailing => 0.9,
+                  },
+                ));
           }),
     );
   }

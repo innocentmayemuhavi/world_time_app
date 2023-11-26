@@ -8,6 +8,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  double value = 0;
   Map data = {};
   @override
   Widget build(BuildContext context) {
@@ -84,45 +85,56 @@ class _HomeState extends State<Home> {
           image: DecorationImage(
               image: AssetImage('assets/night.jpg'), fit: BoxFit.cover),
         ),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              margin: const EdgeInsets.fromLTRB(0, 200, 0, 0),
-              // height: 150,
-              padding: const EdgeInsets.fromLTRB(1, 30, 1, 1),
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(17)),
-              child: Column(children: [
-                Text(data['location'],
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
-                    )),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  data['time'],
-                  style: const TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                )
-              ]),
-            ),
-            ElevatedButton.icon(
-                onPressed: () async {
-                  dynamic result = await Navigator.pushNamed(
-                    context,
-                    '/location',
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              TweenAnimationBuilder(
+                tween: Tween<double>(begin: 0, end: 1),
+                duration: const Duration(seconds: 7),
+                builder: (context, value, child) {
+                  return Padding(
+                    padding: EdgeInsets.all(value * 20),
+                    child: Opacity(
+                      opacity: value,
+                      child: child,
+                    ),
                   );
+                },
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(0, 200, 0, 0),
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(17)),
+                  child: Column(children: [
+                    Text(data['location'],
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        )),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      data['time'],
+                      style: const TextStyle(
+                        fontSize: 60,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    )
+                  ]),
+                ),
+              ),
+              ElevatedButton.icon(
+                  onPressed: () async {
+                    dynamic result = await Navigator.pushNamed(
+                      context,
+                      '/location',
+                    );
 
-                
                     setState(() {
                       data = {
                         'time': result['time'],
@@ -131,11 +143,11 @@ class _HomeState extends State<Home> {
                         'flag': result['flag'],
                       };
                     });
-                  
-                },
-                icon: const Icon(Icons.edit_location),
-                label: const Text('Edit Location')),
-          ],
+                  },
+                  icon: const Icon(Icons.edit_location),
+                  label: const Text('Edit Location')),
+            ],
+          ),
         ),
       ),
     );
